@@ -18,12 +18,12 @@
 
 ## ✨ Features
 
-| Command                   | Description                                                                                   |
-| ------------------------- | --------------------------------------------------------------------------------------------- |
-| 🗂 **Manage Users & Apps** | List all device profiles (Personal, Work), browse & search installed apps with readable names |
-| 📦 **Install APK**        | Pick an `.apk` file from Finder and install it to any user profile                            |
-| 📸 **Take Screenshot**    | Capture the device screen and copy it directly to clipboard                                   |
-| 📱 **Manage Devices**     | List connected ADB devices, connect via Wi-Fi, restart ADB server                             |
+| Command                   | Description                                                                                               |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 🗂 **Manage Users & Apps** | List all device profiles (Personal, Work), browse & search installed apps with readable names             |
+| 📦 **Install APK**        | Pick an `.apk` file from Finder and install it to any user profile                                        |
+| 📸 **Take Screenshot**    | Capture the device screen and copy it directly to clipboard                                               |
+| 📱 **Manage Devices**     | List connected ADB devices, pair Android 11+ devices with QR codes, connect via Wi-Fi, restart ADB server |
 
 ### App Management Actions
 
@@ -91,11 +91,31 @@ which adb
 adb devices  # Should list your device
 ```
 
-**Connect via Wi-Fi (from Manage Devices command):**
+**Pair wirelessly with QR code on Android 11+ (from Manage Devices command):**
+
+1. Connect your Mac and Android device to the same Wi-Fi network
+2. On Android, open **Developer Options** → **Wireless debugging**
+3. In Raycast, open **Manage Devices** → **Pair with QR Code**
+4. On Android, tap **Pair device with QR code** and scan the Raycast QR code
+5. Raycast will detect the scan over mDNS, pair with `adb`, and connect the device
+
+**Pair wirelessly with pairing code on Android 11+ (fallback):**
+
+1. Connect your Mac and Android device to the same Wi-Fi network
+2. On Android, open **Developer Options** → **Wireless debugging**
+3. Tap **Pair device with pairing code**
+4. In Raycast, open **Manage Devices** → **Pair with Pairing Code**
+5. Enter the pairing address, pairing code, and optionally the device address shown by Android
+6. If you skipped the device address, use **Connect to Paired Device** afterward
+
+The QR flow uses the same Android wireless debugging QR payload format as Android Studio.
+
+**Connect via Wi-Fi after an initial USB connection:**
 
 1. Connect device via USB first
-2. Open **Manage Devices** → select device → **Connect via Wi-Fi**
-3. Disconnect USB — device remains connected wirelessly
+2. Open **Manage Devices** → select device → **Enable Wireless Debugging**
+3. Disconnect USB
+4. Use **Connect to Paired Device** with the device Wi-Fi IP and port `5555`
 
 ---
 

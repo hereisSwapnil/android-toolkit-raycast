@@ -1,4 +1,4 @@
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import { getPreferenceValues } from "@raycast/api";
 import { promisify } from "util";
 import { getErrorMessage } from "./errors";
@@ -53,6 +53,83 @@ export async function execAdb(
     }
     throw new Error(getErrorMessage(error));
   }
+}
+
+export async function execAdbArgs(
+  args: string[],
+  options: { deviceId?: string } = {},
+): Promise<string> {
+  const adbPath = getAdbPath();
+  const fullArgs = options.deviceId ? ["-s", options.deviceId, ...args] : args;
+
+  return await new Promise((resolve, reject) => {
+    const child = spawn(adbPath, fullArgs);
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", (data: Buffer) => {
+      stdout += data.toString();
+    });
+    child.stderr.on("data", (data: Buffer) => {
+      stderr += data.toString();
+    });
+    child.on("error", (error) => {
+      reject(error);
+    });
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve(stdout);
+        return;
+      }
+
+      reject(new Error(stderr || stdout || `adb exited with code ${code}`));
+    });
+  });
+}
+
+export async function pairWirelessDevice(
+  pairingAddress: string,
+  pairingCode: string,
+): Promise<string> {
+  return await execAdbArgs(["pair", pairingAddress, pairingCode]);
+}
+
+export async function connectWirelessDevice(
+  deviceAddress: string,
+): Promise<string> {
+  return await execAdbArgs(["connect", deviceAddress]);
+}
+
+export async function enableTcpIpDebugging(
+  deviceId: string,
+  port = "5555",
+): Promise<string> {
+  return await execAdbArgs(["tcpip", port], { deviceId });
+}
+
+export async function restartAdbServer(): Promise<void> {
+  await execAdbArgs(["kill-server"]);
+  await execAdbArgs(["start-server"]);
+}
+
+export interface AdbPairingService {
+  serviceName: string;
+  address: string;
+}
+
+export async function getPairingServices(): Promise<AdbPairingService[]> {
+  const stdout = await execAdbArgs(["mdns", "services"]);
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .map((line) =>
+      line.match(/^([^\t\s]+)\s+_adb-tls-pairing\._tcp\.?\s+(.+):(\d+)$/),
+    )
+    .filter((match): match is RegExpMatchArray => Boolean(match))
+    .map((match) => ({
+      serviceName: match[1],
+      address: `${match[2]}:${match[3]}`,
+    }));
 }
 
 function isExecError(error: unknown): error is { stderr?: string } {
