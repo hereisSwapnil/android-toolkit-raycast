@@ -303,10 +303,12 @@ function QrPairWirelessDevice({ onPaired }: { onPaired: () => void }) {
 
   const markdown = [
     qrDataUrl
-      ? `<p align="center"><img src="${qrDataUrl}" width="260" height="260" /></p>`
+      ? `![Wireless ADB QR Code](${qrDataUrl})`
       : "Generating QR code...",
     "",
-    `<p align="center"><strong>Status:</strong> ${status}<br/>Android: Developer Options &gt; Wireless debugging &gt; Pair device with QR code.</p>`,
+    `\n**Status:** ${status}\n`,
+    "",
+    "Android: Developer Options > Wireless debugging > Pair device with QR code.",
     "",
     pairedAddress ? `Connected address: \`${pairedAddress}\`` : "",
     error ? `Error: \`${error}\`` : "",
