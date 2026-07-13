@@ -99,45 +99,6 @@ adb devices  # Should list your device
 
 ---
 
-## 🛠 Development
-
-```bash
-npm run dev      # Start dev server (hot reload)
-npm run build    # Build for production
-npm run lint     # Lint source files
-npm run fix-lint # Auto-fix lint issues
-```
-
-### Project Structure
-
-```
-android-toolkit-raycast/
-├── assets/
-│   └── command-icon.png       # Extension icon (512×512 PNG)
-├── src/
-│   ├── utils/
-│   │   ├── adb.ts             # ADB command wrapper & helpers
-│   │   └── terminal.ts        # Terminal integration (AppleScript)
-│   ├── manage-users.tsx       # Manage Users & Apps command
-│   ├── install-apk.tsx        # Install APK command
-│   ├── take-screenshot.tsx    # Take Screenshot command
-│   └── manage-devices.tsx     # Manage Devices command
-├── package.json               # Extension manifest & dependencies
-└── tsconfig.json
-```
-
-## 📦 Publish to Raycast
-
-Publish the extension to the Raycast Store:
-
-```bash
-npm run publish
-```
-
-The Raycast CLI will validate the extension and guide you through the store submission flow.
-
----
-
 ## 📄 License
 
 MIT © [Swapnil](https://github.com/YOUR_USERNAME)
