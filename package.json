@@ -70,7 +70,8 @@
     "typescript": "^5.4.5"
   },
   "scripts": {
-    "build": "ray build -e dist",
+    "build": "ray build -I -e dist -o dist",
+    "build:release": "npm run build",
     "dev": "ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",

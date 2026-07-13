@@ -37,6 +37,12 @@ For each app in **Manage Users & Apps**, you can:
 
 ## 🚀 Installation
 
+### Install from GitHub Releases
+
+1. Open the latest release on GitHub
+2. Download the attached `android-toolkit-raycast-v*.zip` file
+3. Import or install the built extension from the Raycast extension workflow you use locally
+
 ### Install from Source
 
 **Prerequisites:**
