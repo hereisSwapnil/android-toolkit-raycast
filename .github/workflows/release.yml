@@ -38,5 +38,5 @@ jobs:
         with:
           name: Android Toolkit ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          generate_release_notes: true
+          body_path: .github/release-notes.md
           files: android-toolkit-raycast-${{ github.ref_name }}.zip
