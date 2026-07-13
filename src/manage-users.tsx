@@ -7,6 +7,7 @@ import {
   Toast,
 } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
+import { useEffect, useState } from "react";
 import {
   getUsers,
   getPackages,
@@ -16,6 +17,7 @@ import {
 } from "./utils/adb";
 import { openTerminalWithCommand } from "./utils/terminal";
 import { getErrorMessage } from "./utils/errors";
+import { getAppIconPath } from "./utils/app-icons";
 
 export default function Command() {
   const {
@@ -59,6 +61,7 @@ export default function Command() {
 }
 
 function AppList({ user }: { user: AdbUser }) {
+  const [appIcons, setAppIcons] = useState<Record<string, string>>({});
   const {
     isLoading,
     data: packages,
@@ -73,6 +76,42 @@ function AppList({ user }: { user: AdbUser }) {
       message: error.message,
     });
   }
+
+  useEffect(() => {
+    if (!packages) {
+      return;
+    }
+
+    const loadedPackages = packages;
+    let isCancelled = false;
+    let packageIndex = 0;
+    setAppIcons({});
+
+    async function loadNextIcon() {
+      while (!isCancelled && packageIndex < loadedPackages.length) {
+        const currentPackage = loadedPackages[packageIndex];
+        packageIndex += 1;
+
+        const iconPath = await getAppIconPath(currentPackage.pkg, user.id);
+        if (iconPath && !isCancelled) {
+          setAppIcons((currentIcons) => ({
+            ...currentIcons,
+            [currentPackage.pkg]: iconPath,
+          }));
+        }
+      }
+    }
+
+    const workers = Array.from(
+      { length: Math.min(4, loadedPackages.length) },
+      () => loadNextIcon(),
+    );
+
+    return () => {
+      isCancelled = true;
+      void Promise.allSettled(workers);
+    };
+  }, [packages, user.id]);
 
   async function handleClearData(pkg: string) {
     try {
@@ -120,7 +159,7 @@ function AppList({ user }: { user: AdbUser }) {
       {packages?.map((p) => (
         <List.Item
           key={p.pkg}
-          icon={Icon.AppWindow}
+          icon={appIcons[p.pkg] || Icon.AppWindow}
           title={p.name}
           subtitle={p.pkg}
           keywords={[p.pkg, ...p.pkg.split(".")]}
